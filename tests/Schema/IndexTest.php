@@ -103,6 +103,42 @@ class IndexTest extends TestCase
         ]);
     }
 
+    public function testGetFieldByPathObject(): void
+    {
+        $index = new Index('test', [
+            'uuid' => new Field\IdentifierField('uuid'),
+            'object' => new Field\ObjectField('object', [
+                'name' => new Field\TextField('name'),
+            ]),
+        ]);
+
+        $field = $index->getFieldByPath('object.name');
+        $this->assertInstanceOf(Field\TextField::class, $field);
+        $this->assertSame('name', $field->name);
+    }
+
+    public function testGetFieldByPathType(): void
+    {
+        $index = new Index('test', [
+            'uuid' => new Field\IdentifierField('uuid'),
+            'blocks' => new Field\TypedField('blocks', 'type', [
+                'text' => [
+                    'title' => new Field\TextField('title'),
+                    'description' => new Field\TextField('description'),
+                    'media' => new Field\IntegerField('media', multiple: true),
+                ],
+                'embed' => [
+                    'title' => new Field\TextField('title'),
+                    'media' => new Field\TextField('media', searchable: false),
+                ],
+            ], multiple: true),
+        ]);
+
+        $field = $index->getFieldByPath('blocks.text.media');
+        $this->assertInstanceOf(Field\IntegerField::class, $field);
+        $this->assertSame('media', $field->name);
+    }
+
     /**
      * @return \Generator<array{
      *     0: string,

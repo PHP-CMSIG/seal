@@ -85,9 +85,11 @@ final class Index
 
         while (true) {
             $field = $fields[\current($pathParts)] ?? null;
+            \next($pathParts);
 
             if ($field instanceof TypedField) {
                 $fields = $field->types[\current($pathParts)];
+                \next($pathParts);
             } elseif ($field instanceof ObjectField) {
                 $fields = $field->fields;
             } elseif ($field instanceof AbstractField) {
