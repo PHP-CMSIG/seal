@@ -308,6 +308,13 @@ final class Marshaller
                     return \date('c', $value);
                 }
 
+                if (\is_string($value) && \str_ends_with($value, 'Z')) {
+                    /** @var int $time */
+                    $time = \strtotime($value);
+
+                    return \date('c', $time);
+                }
+
                 /** @var string */
                 return $value;
             }, (array) $value);
@@ -317,6 +324,13 @@ final class Marshaller
             /** @var int $value */
 
             return \date('c', $value);
+        }
+
+        if (\is_string($value) && \str_ends_with($value, 'Z')) {
+            /** @var int $time */
+            $time = \strtotime($value);
+
+            return \date('c', $time);
         }
 
         /** @var string|null */
