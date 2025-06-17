@@ -43,6 +43,11 @@ final class Index
     public readonly array $filterableFields;
 
     /**
+     * @var string[]
+     */
+    public readonly array $distinctFields;
+
+    /**
      * @param array<string, AbstractField> $fields
      * @param array<string, mixed> $options
      */
@@ -55,6 +60,7 @@ final class Index
         $this->searchableFields = $attributes['searchableFields'];
         $this->filterableFields = $attributes['filterableFields'];
         $this->sortableFields = $attributes['sortableFields'];
+        $this->distinctFields = $attributes['distinctFields'];
         $this->identifierField = $attributes['identifierField'];
     }
 
@@ -109,11 +115,13 @@ final class Index
      *     searchableFields: string[],
      *     filterableFields: string[],
      *     sortableFields: string[],
+     *     distinctFields: string[],
      *     identifierField: IdentifierField|null,
      * } : array{
      *     searchableFields: string[],
      *     filterableFields: string[],
      *     sortableFields: string[],
+     *     distinctFields: string[],
      * })
      */
     private function getAttributes(array $fields, bool $withoutIdentifierField = false): array
@@ -124,6 +132,7 @@ final class Index
             'searchableFields' => [],
             'filterableFields' => [],
             'sortableFields' => [],
+            'distinctFields' => [],
         ];
 
         foreach ($fields as $name => $field) {
@@ -176,6 +185,10 @@ final class Index
 
             if ($field->sortable) {
                 $attributes['sortableFields'][] = $name;
+            }
+
+            if ($field->distinct) {
+                $attributes['distinctFields'][] = $name;
             }
 
             if ($field instanceof IdentifierField) {

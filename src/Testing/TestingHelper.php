@@ -58,7 +58,7 @@ final class TestingHelper
                 'title' => new Field\TextField('title'),
             ]),
             'created' => new Field\DateTimeField('created', filterable: true, sortable: true),
-            'commentsCount' => new Field\IntegerField('commentsCount', filterable: true, sortable: true),
+            'commentsCount' => new Field\IntegerField('commentsCount', filterable: true, sortable: true, distinct: true),
             'rating' => new Field\FloatField('rating', filterable: true, sortable: true),
             'isSpecial' => new Field\BooleanField('isSpecial', filterable: true),
             'comments' => new Field\ObjectField('comments', [
