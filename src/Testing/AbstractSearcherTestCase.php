@@ -117,6 +117,34 @@ abstract class AbstractSearcherTestCase extends TestCase
         }
     }
 
+    public function testCount(): void
+    {
+        $schema = self::getSchema();
+        $this->assertSame(0, self::$searcher->count($schema->indexes[TestingHelper::INDEX_COMPLEX]));
+
+        $documents = TestingHelper::createComplexFixtures();
+
+        foreach ($documents as $document) {
+            self::$taskHelper->tasks[] = self::$indexer->save(
+                $schema->indexes[TestingHelper::INDEX_COMPLEX],
+                $document,
+                ['return_slow_promise_result' => true],
+            );
+        }
+        self::$taskHelper->waitForAll();
+
+        $this->assertSame(4, self::$searcher->count($schema->indexes[TestingHelper::INDEX_COMPLEX]));
+
+        foreach ($documents as $document) {
+            self::$taskHelper->tasks[] = self::$indexer->delete(
+                $schema->indexes[TestingHelper::INDEX_COMPLEX],
+                $document['uuid'],
+                ['return_slow_promise_result' => true],
+            );
+        }
+        self::$taskHelper->waitForAll();
+    }
+
     public function testSearchCondition(): void
     {
         $documents = TestingHelper::createComplexFixtures();

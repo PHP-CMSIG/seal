@@ -37,6 +37,13 @@ abstract class AbstractAdapterTestCase extends TestCase
 
     protected function tearDown(): void
     {
+        try {
+            $task = self::getEngine()->dropSchema(['return_slow_promise_result' => true]);
+            $task->wait();
+        } catch (\Exception) {
+            // ignore eventuell not existing indexes to drop
+        }
+
         self::$taskHelper->waitForAll();
     }
 
@@ -95,7 +102,7 @@ abstract class AbstractAdapterTestCase extends TestCase
     public function testDocument(): void
     {
         $engine = self::getEngine();
-        $task = $engine->createSchema(['return_slow_promise_result' => true]);
+        $task = self::getEngine()->createSchema(['return_slow_promise_result' => true]);
         $task->wait();
 
         $documents = TestingHelper::createComplexFixtures();
@@ -144,19 +151,28 @@ abstract class AbstractAdapterTestCase extends TestCase
         }
     }
 
-    public static function setUpBeforeClass(): void
+    public function testCountDocuments(): void
     {
-        try {
-            $task = self::getEngine()->dropSchema(['return_slow_promise_result' => true]);
-            $task->wait();
-        } catch (\Exception) {
-            // ignore eventuell not existing indexes to drop
-        }
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        $task = self::getEngine()->dropSchema(['return_slow_promise_result' => true]);
+        $engine = self::getEngine();
+        $task = self::getEngine()->createSchema(['return_slow_promise_result' => true]);
         $task->wait();
+
+        $this->assertSame(0, $engine->countDocuments(TestingHelper::INDEX_COMPLEX));
+
+        $documents = TestingHelper::createComplexFixtures();
+
+        foreach ($documents as $document) {
+            self::$taskHelper->tasks[] = $engine->saveDocument(TestingHelper::INDEX_COMPLEX, $document, ['return_slow_promise_result' => true]);
+        }
+
+        self::$taskHelper->waitForAll();
+
+        $this->assertSame(4, $engine->countDocuments(TestingHelper::INDEX_COMPLEX));
+
+        foreach ($documents as $document) {
+            self::$taskHelper->tasks[] = $engine->deleteDocument(TestingHelper::INDEX_COMPLEX, $document['uuid'], ['return_slow_promise_result' => true]);
+        }
+
+        self::$taskHelper->waitForAll();
     }
 }
