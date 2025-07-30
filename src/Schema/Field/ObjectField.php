@@ -34,6 +34,7 @@ final class ObjectField extends AbstractField
         $filterable = false;
         $sortable = false;
         $distinct = false;
+        $facet = false;
 
         foreach ($fields as $field) {
             if ($field->searchable) {
@@ -51,6 +52,10 @@ final class ObjectField extends AbstractField
             if ($field->distinct) {
                 $distinct = true;
             }
+
+            if ($field->facet) {
+                $facet = true;
+            }
         }
 
         parent::__construct(
@@ -60,6 +65,7 @@ final class ObjectField extends AbstractField
             $filterable,
             $sortable,
             $distinct,
+            $facet,
             $options,
         );
     }

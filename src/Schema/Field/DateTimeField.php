@@ -33,6 +33,7 @@ final class DateTimeField extends AbstractField
         bool $filterable = false,
         bool $sortable = false,
         bool $distinct = false,
+        bool $facet = false,
         array $options = [],
     ) {
         if ($searchable) { // @phpstan-ignore-line
@@ -46,6 +47,7 @@ final class DateTimeField extends AbstractField
             $filterable,
             $sortable,
             $distinct,
+            $facet,
             $options,
         );
     }

@@ -35,6 +35,7 @@ final class TypedField extends AbstractField
         $filterable = false;
         $sortable = false;
         $distinct = false;
+        $facet = false;
 
         foreach ($types as $fields) {
             foreach ($fields as $field) {
@@ -53,6 +54,10 @@ final class TypedField extends AbstractField
                 if ($field->distinct) {
                     $distinct = true;
                 }
+
+                if ($field->facet) {
+                    $facet = true;
+                }
             }
         }
 
@@ -63,6 +68,7 @@ final class TypedField extends AbstractField
             $filterable,
             $sortable,
             $distinct,
+            $facet,
             $options,
         );
     }

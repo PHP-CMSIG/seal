@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace CmsIg\Seal\Search;
 
 use CmsIg\Seal\Schema\Index;
+use CmsIg\Seal\Search\Facet\AbstractFacet;
 
 final class Search
 {
@@ -21,6 +22,7 @@ final class Search
      * @param object[] $filters
      * @param array<string, 'asc'|'desc'> $sortBys
      * @param array<string> $highlightFields
+     * @param array<AbstractFacet> $facets
      */
     public function __construct(
         public readonly Index $index,
@@ -32,6 +34,7 @@ final class Search
         public readonly string $highlightPreTag = '<mark>',
         public readonly string $highlightPostTag = '</mark>',
         public readonly string|null $distinct = null,
+        public readonly array $facets = [],
     ) {
     }
 }

@@ -16,6 +16,7 @@ namespace CmsIg\Seal\Search;
 use CmsIg\Seal\Adapter\SearcherInterface;
 use CmsIg\Seal\Schema\Index;
 use CmsIg\Seal\Schema\Schema;
+use CmsIg\Seal\Search\Facet\AbstractFacet;
 
 final class SearchBuilder
 {
@@ -45,6 +46,11 @@ final class SearchBuilder
     private string $highlightPostTag = '</mark>';
 
     private string|null $distinct = null;
+
+    /**
+     * @var array<AbstractFacet>
+     */
+    private array $facets = [];
 
     public function __construct(
         private readonly Schema $schema,
@@ -113,6 +119,13 @@ final class SearchBuilder
         return $this;
     }
 
+    public function addFacet(AbstractFacet $facet): self
+    {
+        $this->facets[] = $facet;
+
+        return $this;
+    }
+
     public function getSearcher(): SearcherInterface
     {
         return $this->searcher;
@@ -130,6 +143,7 @@ final class SearchBuilder
             $this->highlightPreTag,
             $this->highlightPostTag,
             $this->distinct,
+            $this->facets,
         );
     }
 

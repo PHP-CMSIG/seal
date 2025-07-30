@@ -11,25 +11,19 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace CmsIg\Seal\Schema\Field;
+namespace CmsIg\Seal\Search\Facet;
 
 /**
  * @readonly
  */
-abstract class AbstractField
+abstract class AbstractFacet
 {
     /**
      * @param array<string, mixed> $options
      */
     public function __construct(
-        public readonly string $name,
-        public readonly bool $multiple,
-        public readonly bool $searchable,
-        public readonly bool $filterable,
-        public readonly bool $sortable,
-        public readonly bool $distinct,
-        public readonly bool $facet,
-        public readonly array $options,
+        public readonly string $field,
+        public readonly array $options = [],
     ) {
     }
 }

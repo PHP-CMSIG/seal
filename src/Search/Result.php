@@ -20,10 +20,12 @@ final class Result extends \IteratorIterator
 {
     /**
      * @param \Generator<int, array<string, mixed>> $documents
+     * @param array<string, mixed> $facets
      */
     public function __construct(
         \Generator $documents,
         private readonly int $total,
+        private readonly array $facets = [],
     ) {
         parent::__construct($documents);
     }
@@ -31,6 +33,14 @@ final class Result extends \IteratorIterator
     public function total(): int
     {
         return $this->total;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function facets(): array
+    {
+        return $this->facets;
     }
 
     public static function createEmpty(): static

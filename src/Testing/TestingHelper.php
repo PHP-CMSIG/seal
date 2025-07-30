@@ -27,6 +27,19 @@ final class TestingHelper
     {
     }
 
+    /**
+     * @param array<mixed> $array
+     */
+    public static function recursiveKeySort(array &$array): void
+    {
+        \ksort($array);
+        foreach ($array as &$value) {
+            if (\is_array($value)) {
+                self::recursiveKeySort($value);
+            }
+        }
+    }
+
     public static function createSchema(): Schema
     {
         $prefix = \getenv('TEST_INDEX_PREFIX') ?: $_ENV['TEST_INDEX_PREFIX'] ?? 'test_';
@@ -59,13 +72,13 @@ final class TestingHelper
             ]),
             'created' => new Field\DateTimeField('created', filterable: true, sortable: true),
             'commentsCount' => new Field\IntegerField('commentsCount', filterable: true, sortable: true, distinct: true),
-            'rating' => new Field\FloatField('rating', filterable: true, sortable: true),
-            'isSpecial' => new Field\BooleanField('isSpecial', filterable: true),
+            'rating' => new Field\FloatField('rating', filterable: true, sortable: true, facet: true),
+            'isSpecial' => new Field\BooleanField('isSpecial', filterable: true, facet: true),
             'comments' => new Field\ObjectField('comments', [
                 'email' => new Field\TextField('email', searchable: false),
                 'text' => new Field\TextField('text'),
             ], multiple: true),
-            'tags' => new Field\TextField('tags', multiple: true, filterable: true),
+            'tags' => new Field\TextField('tags', multiple: true, filterable: true, facet: true),
             'categoryIds' => new Field\IntegerField('categoryIds', multiple: true, filterable: true),
             'location' => new Field\GeoPointField('location', filterable: true, sortable: true),
         ];
