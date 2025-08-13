@@ -816,6 +816,43 @@ abstract class AbstractSearcherTestCase extends TestCase
         }
     }
 
+    public function testGreaterThanConditionWithDateField(): void
+    {
+        $documents = TestingHelper::createComplexFixtures();
+
+        $schema = self::getSchema();
+
+        foreach ($documents as $document) {
+            self::$taskHelper->tasks[] = self::$indexer->save(
+                $schema->indexes[TestingHelper::INDEX_COMPLEX],
+                $document,
+                ['return_slow_promise_result' => true],
+            );
+        }
+        self::$taskHelper->waitForAll();
+
+        $search = new SearchBuilder($schema, self::$searcher);
+        $search->index(TestingHelper::INDEX_COMPLEX);
+        $search->addFilter(new Condition\GreaterThanCondition('created', '2022-12-26T12:00:00+01:00'));
+
+        $loadedDocuments = [...$search->getResult()];
+        $this->assertGreaterThanOrEqual(1, \count($loadedDocuments));
+
+        foreach ($loadedDocuments as $loadedDocument) {
+            $created = $loadedDocument['created'] ?? '1970-01-01T00:00:00+00:00';
+            $this->assertIsString($created);
+            $this->assertGreaterThan(\strtotime('2022-12-26T12:00:00+01:00'), \strtotime($created));
+        }
+
+        foreach ($documents as $document) {
+            self::$taskHelper->tasks[] = self::$indexer->delete(
+                $schema->indexes[TestingHelper::INDEX_COMPLEX],
+                $document['uuid'],
+                ['return_slow_promise_result' => true],
+            );
+        }
+    }
+
     public function testGreaterThanEqualCondition(): void
     {
         $documents = TestingHelper::createComplexFixtures();
@@ -845,6 +882,43 @@ abstract class AbstractSearcherTestCase extends TestCase
             );
 
             $this->assertGreaterThanOrEqual(2.5, $loadedDocument['rating']);
+        }
+
+        foreach ($documents as $document) {
+            self::$taskHelper->tasks[] = self::$indexer->delete(
+                $schema->indexes[TestingHelper::INDEX_COMPLEX],
+                $document['uuid'],
+                ['return_slow_promise_result' => true],
+            );
+        }
+    }
+
+    public function testGreaterThanOrEqualConditionWithDateField(): void
+    {
+        $documents = TestingHelper::createComplexFixtures();
+
+        $schema = self::getSchema();
+
+        foreach ($documents as $document) {
+            self::$taskHelper->tasks[] = self::$indexer->save(
+                $schema->indexes[TestingHelper::INDEX_COMPLEX],
+                $document,
+                ['return_slow_promise_result' => true],
+            );
+        }
+        self::$taskHelper->waitForAll();
+
+        $search = new SearchBuilder($schema, self::$searcher);
+        $search->index(TestingHelper::INDEX_COMPLEX);
+        $search->addFilter(new Condition\GreaterThanEqualCondition('created', '2022-12-26T12:00:00+01:00'));
+
+        $loadedDocuments = [...$search->getResult()];
+        $this->assertGreaterThanOrEqual(2, \count($loadedDocuments));
+
+        foreach ($loadedDocuments as $loadedDocument) {
+            $created = $loadedDocument['created'] ?? '1970-01-01T00:00:00+00:00';
+            $this->assertIsString($created);
+            $this->assertGreaterThanOrEqual(\strtotime('2022-12-26T12:00:00+01:00'), \strtotime($created));
         }
 
         foreach ($documents as $document) {
