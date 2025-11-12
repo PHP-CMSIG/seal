@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace CmsIg\Seal\Schema\Field;
 
 /**
+ * @readonly
+ *
  * Type to store any text, options can maybe use to specify it more specific.
  */
 final class TextField extends AbstractField
 {
     /**
      * @param array<string, mixed> $options
-     *
-     * @readonly
      */
     public function __construct(
         string $name,
