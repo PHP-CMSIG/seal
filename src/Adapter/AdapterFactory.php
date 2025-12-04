@@ -48,10 +48,9 @@ final class AdapterFactory
      */
     public function parseDsn(string $dsn): array
     {
-        /** @var string|null $adapterName */
         $adapterName = \explode(':', $dsn, 2)[0];
 
-        if (!$adapterName) {
+        if ('' === $adapterName) {
             throw new \InvalidArgumentException(
                 'Invalid DSN: "' . $dsn . '".',
             );

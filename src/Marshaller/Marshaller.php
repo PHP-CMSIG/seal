@@ -39,13 +39,14 @@ final class Marshaller
     }
 
     /**
-     * @param Field\AbstractField[] $fields
+     * @param array<string, Field\AbstractField> $fields
      * @param array<string, mixed> $document
      *
      * @return array<string, mixed>
      */
     public function marshall(array $fields, array $document): array
     {
+        /** @var array<string, mixed> $rawDocument */
         $rawDocument = [];
 
         foreach ($fields as $name => $field) {
@@ -119,7 +120,7 @@ final class Marshaller
         if ($field->multiple) {
             /** @var string[]|null $value */
 
-            return \array_map(fn (string $value): int|string => $this->marshallDateTimeFieldValue($value), (array) $value);
+            return \array_map($this->marshallDateTimeFieldValue(...), (array) $value);
         }
 
         if (null === $value) {
@@ -231,13 +232,14 @@ final class Marshaller
     }
 
     /**
-     * @param Field\AbstractField[] $fields
+     * @param array<string, Field\AbstractField> $fields
      * @param array<string, mixed> $raw
      *
      * @return array<string, mixed>
      */
     public function unmarshall(array $fields, array $raw): array
     {
+        /** @var array<string, mixed> $document */
         $document = [];
 
         foreach ($fields as $name => $field) {
@@ -313,7 +315,7 @@ final class Marshaller
     private function unmarshallObjectFields(array $raw, Field\ObjectField $field): array
     {
         if (!$field->multiple) {
-            return $this->unmarshall($field->fields, $raw);
+            return $this->unmarshall($field->fields, $raw); // @phpstan-ignore-line argument.type
         }
 
         /** @var array<array<string, mixed>> $documentFields */
@@ -372,7 +374,7 @@ final class Marshaller
         if ($field->multiple) {
             /** @var string[]|int[]|null $value */
 
-            return \array_map(fn (string|int $value): string => $this->unmarshallDateTimeFieldValue($value), (array) $value);
+            return \array_map($this->unmarshallDateTimeFieldValue(...), (array) $value);
         }
 
         /** @var string|int|null $value */
