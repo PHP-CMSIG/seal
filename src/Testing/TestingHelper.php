@@ -57,6 +57,7 @@ final class TestingHelper
                 ],
             ]),
             'article' => new Field\TextField('article'),
+            'code' => new Field\TextField('code'),
             'blocks' => new Field\TypedField('blocks', 'type', [
                 'text' => [
                     'title' => new Field\TextField('title'),
@@ -142,6 +143,7 @@ final class TestingHelper
                     'media' => 1,
                 ],
                 'article' => '<article><h2>New Subtitle</h2><p>A html field with some content</p></article>',
+                'code' => 'FARA25008/B',
                 'blocks' => [
                     [
                         'type' => 'text',
@@ -203,6 +205,7 @@ final class TestingHelper
                     'media' => 'https://www.youtube.com/watch?v=iYM2zFP3Zn0',
                 ],
                 'article' => '<article><h2>Other Subtitle</h2><p>A html field with some content</p></article>',
+                'code' => 'OSA20249/C',
                 'footer' => [
                     'title' => 'Other Footer',
                 ],
