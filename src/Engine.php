@@ -16,7 +16,7 @@ namespace CmsIg\Seal;
 use CmsIg\Seal\Adapter\AdapterInterface;
 use CmsIg\Seal\Exception\DocumentNotFoundException;
 use CmsIg\Seal\Reindex\ReindexConfig;
-use CmsIg\Seal\Reindex\ReindexProviderInterface;
+use CmsIg\Seal\Reindex\StaticReindexProviderInterface;
 use CmsIg\Seal\Schema\Schema;
 use CmsIg\Seal\Search\Condition\IdentifierCondition;
 use CmsIg\Seal\Search\SearchBuilder;
@@ -149,19 +149,19 @@ final class Engine implements EngineInterface
         callable|null $progressCallback = null,
         array $options = [],
     ): TaskInterface|null {
-        /** @var array<string, ReindexProviderInterface[]> $reindexProvidersPerIndex */
+        /** @var array<string, StaticReindexProviderInterface[]> $reindexProvidersPerIndex */
         $reindexProvidersPerIndex = [];
         /** @var array<string, string> $identifiersPerIndex */
         $identifiersPerIndex = [];
         foreach ($reindexProviders as $reindexProvider) {
-            if (!isset($this->schema->indexes[$reindexProvider::getIndex()])) {
+            if (!isset($this->schema->indexes[$reindexProvider->getIndexName()])) {
                 continue;
             }
 
-            $identifiersPerIndex[$reindexProvider::getIndex()] = $this->schema->indexes[$reindexProvider::getIndex()]->getIdentifierField()->name;
+            $identifiersPerIndex[$reindexProvider->getIndexName()] = $this->schema->indexes[$reindexProvider->getIndexName()]->getIdentifierField()->name;
 
-            if ($reindexProvider::getIndex() === $reindexConfig->getIndex() || null === $reindexConfig->getIndex()) {
-                $reindexProvidersPerIndex[$reindexProvider::getIndex()][] = $reindexProvider;
+            if ($reindexProvider->getIndexName() === $reindexConfig->getIndexName() || null === $reindexConfig->getIndexName()) {
+                $reindexProvidersPerIndex[$reindexProvider->getIndexName()][] = $reindexProvider;
             }
         }
 
@@ -218,7 +218,7 @@ final class Engine implements EngineInterface
         }
 
         if ([] !== $documentIdsToDelete) {
-            $index = $reindexConfig->getIndex();
+            $index = $reindexConfig->getIndexName();
             \assert(null !== $index, 'Index must be set if identifiers are given in reindex config.');
             $tasks[] = $this->bulk($index, [], \array_keys($documentIdsToDelete), $reindexConfig->getBulkSize(), $options);
         }
